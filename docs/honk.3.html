@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 2019 Ted Unangst
+  
+   Permission to use, copy, modify, and distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+  
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="mandoc.css" type="text/css" media="all"/>
+  <title>HONK(3)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">HONK(3)</td>
+    <td class="head-vol">Library Functions Manual</td>
+    <td class="head-rtitle">HONK(3)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<p class="Pp"><code class="Nm">honk</code> &#x2014; <span class="Nd">API
+    access</span></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<p class="Pp">In addition to the standard web interface, some functionality is
+    available via the <code class="Nm">honk</code> HTTP API.</p>
+<p class="Pp">With the exception of login, all requests should contain the
+    following form values.</p>
+<dl class="Bl-tag">
+  <dt><var class="Fa">action</var></dt>
+  <dd>The desired action. See below.</dd>
+  <dt><var class="Fa">token</var></dt>
+  <dd>An authorization token. Alternatively, may be passed in the
+      &#x201C;Authorization&#x201D; HTTP header.</dd>
+</dl>
+<p class="Pp">The API URL for all actions other than login and logout is
+    <span class="Pa">/api</span>.</p>
+<section class="Ss">
+<h2 class="Ss" id="login"><a class="permalink" href="#login">login</a></h2>
+<p class="Pp">Send a POST request to <span class="Pa">/dologin</span> with the
+    following form values.</p>
+<dl class="Bl-tag">
+  <dt><var class="Fa">username</var></dt>
+  <dd>User name.</dd>
+  <dt><var class="Fa">password</var></dt>
+  <dd>Pass phrase.</dd>
+  <dt><var class="Fa">gettoken</var></dt>
+  <dd>Must be &#x201C;1&#x201D;.</dd>
+</dl>
+<p class="Pp">This will return a token to be used for future requests. The token
+    is valid for one year.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="logout"><a class="permalink" href="#logout">logout</a></h2>
+<p class="Pp">Send a request to <span class="Pa">/logout</span> with the
+    <var class="Fa">token</var> to be expired.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="honk"><a class="permalink" href="#honk">honk</a></h2>
+<p class="Pp">The <var class="Fa">action</var> value should be
+    &#x201C;honk&#x201D;. Content type should be multipart/form-data if an
+    attachment is included. The following values are recognized:</p>
+<dl class="Bl-tag">
+  <dt><var class="Fa">noise</var></dt>
+  <dd>The contents of the honk.</dd>
+  <dt><var class="Fa">format</var></dt>
+  <dd>The format of noise. Defaults to markdown. May also be html.</dd>
+  <dt><var class="Fa">donk</var></dt>
+  <dd>A file to attach.</dd>
+  <dt><var class="Fa">donkdesc</var></dt>
+  <dd>A description for the attached file.</dd>
+  <dt><var class="Fa">donkxid</var></dt>
+  <dd>The XID of a previously uploaded attachment.</dd>
+  <dt><var class="Fa">placename</var></dt>
+  <dd>The name of an associated location.</dd>
+  <dt><var class="Fa">placeurl</var></dt>
+  <dd>The url of an associated location.</dd>
+  <dt><var class="Fa">placelat</var></dt>
+  <dd>The latitude of an associated location.</dd>
+  <dt><var class="Fa">placelong</var></dt>
+  <dd>The longitude of an associated location.</dd>
+  <dt><var class="Fa">timestart</var></dt>
+  <dd>The start time of an event.</dd>
+  <dt><var class="Fa">rid</var></dt>
+  <dd>The ActivityPub ID that this honk is in reply to.</dd>
+</dl>
+<p class="Pp">Upon success, the honk action will return the URL for the created
+    honk.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="donk"><a class="permalink" href="#donk">donk</a></h2>
+<p class="Pp">Upload just an attachment using <var class="Fa">donk</var> and
+    <var class="Fa">donkdesc</var>. Content type must be multipart/form-data.
+    Will return the XID.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="gethonks"><a class="permalink" href="#gethonks">gethonks</a></h2>
+<p class="Pp">The &#x201C;gethonks&#x201D; <var class="Fa">action</var> can be
+    used to query for honks. The following parameters are used.</p>
+<dl class="Bl-tag">
+  <dt><var class="Fa">page</var></dt>
+  <dd>Should be one of &#x201C;home&#x201D; or &#x201C;atme&#x201D;.</dd>
+  <dt><var class="Fa">after</var></dt>
+  <dd>Only return honks after the specified ID.</dd>
+  <dt><var class="Fa">wait</var></dt>
+  <dd>If there are no results, wait this many seconds for something to
+    appear.</dd>
+</dl>
+<p class="Pp">The result will be returned as json.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="zonkit"><a class="permalink" href="#zonkit">zonkit</a></h2>
+<p class="Pp">The &#x201C;zonkit&#x201D; action began life as a delete function,
+    but has since evolved some other powers as specified by the
+    <var class="Fa">wherefore</var> parameter. The target of the action is
+    specified by the <var class="Fa">what</var> parameter and is generally the
+    XID of a honk.</p>
+<p class="Pp">Wherefore must be one of the following.</p>
+<dl class="Bl-tag">
+  <dt>bonk</dt>
+  <dd>Share honk with others.</dd>
+  <dt>unbonk</dt>
+  <dd>Undo share.</dd>
+  <dt>save</dt>
+  <dd>Mark honk as saved.</dd>
+  <dt>unsave</dt>
+  <dd>Unmark honk as saved.</dd>
+  <dt>react</dt>
+  <dd>Post an emoji reaction. A custom reaction may be specified with
+      <var class="Fa">reaction</var>.</dd>
+  <dt>ack</dt>
+  <dd>Mark honk as read.</dd>
+  <dt>deack</dt>
+  <dd>Unmark honk as read.</dd>
+  <dt>zonk</dt>
+  <dd>Delete this honk.</dd>
+  <dt>zonvoy</dt>
+  <dd>Mute this thread. What should identify a convoy.</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="sendactivity"><a class="permalink" href="#sendactivity">sendactivity</a></h2>
+<p class="Pp">Send anything. No limits, no error checking.</p>
+<dl class="Bl-tag">
+  <dt><var class="Fa">rcpt</var></dt>
+  <dd>An actor to deliver the message to to. May be specified more than once. An
+      inbox may be specified directly by prefixing with %.</dd>
+  <dt><var class="Fa">msg</var></dt>
+  <dd>The message. It should be a valid json activity, but yolo.</dd>
+  <dt><var class="Fa">public</var></dt>
+  <dd>Set to 1 to use shared inboxes for delivery.</dd>
+</dl>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<p class="Pp">Refer to the sample code in the <span class="Pa">toys</span>
+    directory.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<p class="Pp"><a class="Xr" href="vim.3.html">vim(3)</a></p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 10, 2020</td>
+    <td class="foot-os">OpenBSD 6.7</td>
+  </tr>
+</table>
+</body>
+</html>
